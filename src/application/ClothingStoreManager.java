@@ -47,6 +47,7 @@ public class ClothingStoreManager {
         // Add example models
         models.add(new Model(1, "Air Max", "Shoe", "Sport", 1));
         models.add(new Model(2, "Classic Hoodie", "Hoodie", "Oversized", 2));
+        models.add(new Model(2, "Air Force", "Shoe", "Sneakers", 1));
     }
 
     private static void showMainMenu() {
