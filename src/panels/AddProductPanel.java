@@ -1,19 +1,45 @@
 package panels;
 
+import java.util.List;
+import java.util.Map;
+
+import clases.Model;
+import clases.Brand;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
+import application.ClothingStoreManager;
+
+import java.util.ArrayList;
+
+import clases.Category;
 public class AddProductPanel extends javax.swing.JPanel {
 
-    public AddProductPanel() {
+    private List<Model> models;
+    private List<Category> categories;
+    private List<Brand> brands;
+    private Map<Integer, String> brandCodeMap;
+
+    public AddProductPanel(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands) {
+        this.models = models;
+        this.brandCodeMap = brandCodeMap;
+        this.categories = categories;
+        this.brands = brands; 
+        
         initComponents();
         initConfig();
+
+        
     }
+    
 
     private void initConfig() {
         // Configuración del fondo y fuente general
@@ -38,6 +64,7 @@ public class AddProductPanel extends javax.swing.JPanel {
 
         jLabel6.setForeground(labelColor);
         jLabel6.setFont(labelFont);
+        
 
         // Configuración de los campos de texto y combobox
         Color fieldBackground = new Color(40, 40, 40); // Fondo oscuro para campos
@@ -72,7 +99,105 @@ public class AddProductPanel extends javax.swing.JPanel {
         AddProduct.setForeground(buttonTextColor);
         AddProduct.setFont(new Font("Roboto", Font.BOLD, 18)); // Fuente moderna
         AddProduct.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
+        
+        
+        
+
+        // Llenar el ComboBox con los nombres de las categorías
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (Category category : categories) {
+            model.addElement(category.getName()); // Añadir solo el nombre de la categoría
+        }
+        CategorieCombo.setModel(model);
+
+        // Añadimos el listener al botón
+        AddProduct.addActionListener(e -> addProductAction());
+
+        // Llenar el ComboBox de marcas
+        DefaultComboBoxModel<String> brandModel = new DefaultComboBoxModel<>();
+        if (brands != null && !brands.isEmpty()) {
+            for (Brand brand : brands) {
+                brandModel.addElement(brand.getName()); // Añadir el nombre de la marca
+            }
+        } else {
+            brandModel.addElement("No hay marcas disponibles");
+        }
+        MarcaCombo.setModel(brandModel);
+        
     }
+
+    private void addProductAction() {
+        // Obtener datos del formulario
+        String name = jTextField1.getText();
+        String category = (String) CategorieCombo.getSelectedItem();
+        String type = (String) TipeCombo.getSelectedItem();
+        String brandName = (String) MarcaCombo.getSelectedItem();
+        
+        // Validación básica para asegurarse de que no estén vacíos
+        if (name.isEmpty() || category.isEmpty() || brandName.isEmpty()) {
+            System.out.println("Por favor, complete todos los campos.");
+            return;
+        }
+    
+        // Generar el código del modelo con las iniciales
+        String modelCode = getModelCode(name, category, brandName);
+        
+        // Buscar el objeto Category correspondiente al nombre seleccionado
+        Category selectedCategory = null;
+        for (Category cat : categories) {
+            if (cat.getName().equals(category)) {
+                selectedCategory = cat;
+                break;
+            }
+        }
+        
+        // Buscar la marca seleccionada en la lista de marcas
+        Brand selectedBrand = null;
+        for (Brand brand : brands) {
+            if (brand.getName().equals(brandName)) {
+                selectedBrand = brand;
+                break;
+            }
+        }
+        
+        // Verificar si se ha encontrado la marca
+        if (selectedBrand == null) {
+            System.out.println("Marca no encontrada: " + brandName);
+            return;
+        }
+    
+        // Obtener el código de la marca
+        int brandCode = selectedBrand.getBrandCode();
+    
+        // Crear un nuevo modelo y agregarlo a la lista
+        Model newModel = new Model(modelCode, name, selectedCategory.getName(), type, brandCode);
+        models.add(newModel);
+    
+        // Confirmar que el producto fue añadido
+        System.out.println("Producto añadido: " + newModel.getName() + " con código de modelo: " + modelCode);
+
+        // Cerrar el panel de añadir producto y mostrar el menú principal nuevamente
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this); // Obtener el JFrame contenedor
+        if (parentFrame != null) {
+        parentFrame.setVisible(false); // Cerrar el panel actual
+        }
+
+    // Volver al menú principal
+        ClothingStoreManager.showMenuAgain(); // Mostrar nuevamente el menú principal
+    }
+
+    private String getModelCode(String name, String category, String brand) {
+        // Obtener las primeras letras de cada campo (nombre, categoría, marca)
+        String nameInitial = name.isEmpty() ? "" : name.substring(0, 1).toUpperCase();  // Primer letra del nombre del producto
+        String categoryInitial = category.isEmpty() ? "" : category.substring(0, 1).toUpperCase();  // Primer letra de la categoría
+        String brandInitial = brand.isEmpty() ? "" : brand.substring(0, 1).toUpperCase();  // Primer letra de la marca
+    
+        // Concatenar las iniciales para formar el código del modelo
+        return nameInitial + categoryInitial + brandInitial;
+    }
+    
+    
+    
 
     @SuppressWarnings("unchecked")
     private void initComponents() {

@@ -1,11 +1,19 @@
 package panels;
 
+import clases.Brand;
+import clases.Category;
 import clases.Model;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,14 +21,33 @@ import javax.swing.table.DefaultTableModel;
 
 public class ManageShop extends javax.swing.JPanel {
 
-    private List<Model> models;
+    private  List<Model> models;
+    private  List<Brand> brands;
+    private  List<Category> categories;
+    private  Map<Integer, String> brandCodeMap;
 
-    public ManageShop(List<Model> models) {
+
+
+    public ManageShop(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands) {
         this.models = models;
+        this.brandCodeMap = brandCodeMap;
+        this.categories = categories;
+        this.brands = brands;
         initComponents();
         initConfig();
         loadModelsToTable();
+        initBrandCodeMap();
+
     }
+
+    private void initBrandCodeMap() {
+    brandCodeMap = new HashMap<>();
+    for (Brand brand : brands) {
+        brandCodeMap.put(brand.getBrandCode(), brand.getName());
+    }
+}
+
+
 
     private void initConfig() {
         // Set a dark, futuristic background
@@ -66,31 +93,43 @@ public class ManageShop extends javax.swing.JPanel {
         });
     }
 
-    private void loadModelsToTable() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
+    private String getBrandNameByCode(int brandCode) {
+        return brandCodeMap.getOrDefault(brandCode, "Desconocida");
+    }
+    
 
+    private void loadModelsToTable() {
+        DefaultTableModel modelTable = (DefaultTableModel) jTable1.getModel();
+        modelTable.setRowCount(0);  // Limpiar las filas previas
+
+        // Recorrer la lista de modelos y añadirlos a la tabla
         for (Model modelItem : models) {
-            model.addRow(new Object[]{
+            String brandName = getBrandNameByCode(modelItem.getBrandCode());  // Obtener el nombre de la marca
+            modelTable.addRow(new Object[]{
                 modelItem.getCode(),
                 modelItem.getName(),
                 modelItem.getCategory(),
                 modelItem.getType(),
-                modelItem.getBrandCode()
+                brandName  // Usar el nombre de la marca en lugar del código
             });
         }
     }
 
-    private static void addProductsMenu() {
-        JFrame menuFrame = new JFrame("Main Menu");
-        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        menuFrame.setSize(1000, 800);
-        menuFrame.setLayout(new FlowLayout());
 
-        JPanel ProductPanel = new AddProductPanel();
-        menuFrame.add(ProductPanel);
-
-        menuFrame.setVisible(true);
+    private void addProductsMenu() {
+        // Aquí no creamos una nueva ventana, solo reemplazamos el contenido actual de ManageShop
+        AddProductPanel productPanel = new AddProductPanel(models, brandCodeMap, categories, brands);
+        this.setLayout(new BorderLayout());
+        this.add(productPanel, BorderLayout.CENTER);
+        this.removeAll();  // Remueve todos los componentes actuales del panel
+    
+        // Agregar el nuevo panel de productos
+        this.add(productPanel);
+        
+    
+        // Vuelve a validar y repintar el panel
+        this.revalidate();
+        this.repaint();
     }
 
     @SuppressWarnings("unchecked")

@@ -6,8 +6,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import panels.ManageShop;
+
 
 public class ClothingStoreManager {
     private static List<Store> stores = new ArrayList<>();
@@ -18,14 +22,17 @@ public class ClothingStoreManager {
     private static List<Brand> brands = new ArrayList<>();
     private static Product newProduct;
     private static Product updatedProduct;
+    private static Map<Integer, String> brandCodeMap;
+    private static JFrame menuFrame;
+
 
     public static void main(String[] args) {
         // Initialize data
         initializeData();
-
         // Show main menu after initializing data
         showMainMenu();
     }
+
 
     private static void initializeData() {
         // Add example stores
@@ -45,43 +52,53 @@ public class ClothingStoreManager {
         types.add(new Type("Oversized", "Hoodie"));
 
         // Add example models
-        models.add(new Model(1, "Air Max", "Shoe", "Sport", 1));
-        models.add(new Model(2, "Classic Hoodie", "Hoodie", "Oversized", 2));
-        models.add(new Model(2, "Air Force", "Shoe", "Sneakers", 1));
+        models.add(new Model("ASN", "Air Max", "Shoe", "Sport", 1));
+        models.add(new Model("CHA", "Classic Hoodie", "Hoodie", "Oversized", 2));
+        models.add(new Model("ASN", "Air Force", "Shoe", "Sneakers", 1));
+    
+        // Initialize brandCodeMap here
+        brandCodeMap = new HashMap<>();
+            for (Brand brand : brands) {
+            brandCodeMap.put(brand.getBrandCode(), brand.getName());
+    }
+
     }
 
     private static void showMainMenu() {
-        JFrame menuFrame = new JFrame("Main Menu");
+        menuFrame = new JFrame("Main Menu");
         
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        menuFrame.setSize(1000, 800);
-        menuFrame.setLayout(new FlowLayout());
+        menuFrame.setSize(800, 600);
+        menuFrame.setLayout(new BorderLayout());
           
         
-        JPanel ManagePanel = new ManageShop(models);
+        JPanel ManagePanel = new ManageShop(models, brandCodeMap, categories, brands);
  
         menuFrame.add(ManagePanel);
 
         menuFrame.setVisible(true);
         
     }
+    
+    // Método para cerrar el frame y mostrar nuevamente el menú principal
+    public static void showMenuAgain() {
+        // Si el menuFrame ya existe, lo volvemos a mostrar
+        if (menuFrame != null) {
+             menuFrame.dispose(); // Esto cierra el JFrame actual
+         // Crear el nuevo JFrame
+        menuFrame = new JFrame("Main Menu");
+        
+        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        menuFrame.setSize(800, 600);
+        menuFrame.setLayout(new BorderLayout());
 
-    private static void viewProductsInStore() {
-        JFrame productFrame = new JFrame("Products in Store");
-        productFrame.setSize(400, 300);
-        productFrame.setLayout(new BoxLayout(productFrame.getContentPane(), BoxLayout.Y_AXIS));
+        // Crear tu panel de gestión y añadirlo al JFrame
+        JPanel managePanel = new ManageShop(models, brandCodeMap, categories, brands);
+        menuFrame.add(managePanel);
 
-        for (Product product : products) {
-            productFrame.add(new JLabel("Product Code: " + product.getProductCode() +
-                    ", Model Code: " + product.getModelCode() +
-                    ", Size: " + product.getSize()));
+        // Hacer visible el frame
+        menuFrame.setVisible(true);
         }
-
-        if (productFrame.getComponentCount() == 0) {
-            productFrame.add(new JLabel("No products found."));
-        }
-
-        productFrame.setVisible(true);
     }
 
     public static void addProductToStore(Product newProduct) {
