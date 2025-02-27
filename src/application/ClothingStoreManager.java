@@ -42,10 +42,15 @@ public class ClothingStoreManager {
         // Add example brands
         brands.add(new Brand(1, "Nike"));
         brands.add(new Brand(2, "Adidas"));
+        brands.add(new Brand(3, "Puma"));
+        brands.add(new Brand(4, "Reebok"));
+        brands.add(new Brand(5, "New Balance"));
 
         // Add example categories
         categories.add(new Category("Shoe", "8,9,10"));
         categories.add(new Category("Hoodie", "S,M,L"));
+        categories.add(new Category("Trousers", "34,36,38,40,42"));
+        categories.add(new Category("Glasses", "Unique"));
 
         // Add example types
         types.add(new Type("Sport", "Shoe"));

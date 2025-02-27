@@ -82,7 +82,29 @@ public class ManageShop extends javax.swing.JPanel {
         jTable1.setFont(new java.awt.Font("Roboto", 0, 14));  // Modern font
         jTable1.setRowHeight(30);  // Slightly taller rows
         jTable1.setGridColor(new Color(80, 80, 80));  // Subtle grid lines
-        jTable1.setBorder(BorderFactory.createEmptyBorder());  // Remove border
+        jTable1.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 1)); // Soft border for the table
+
+        // Estilo de las filas alternadas
+        jTable1.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                java.awt.Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                // Cambiar el fondo de las filas alternadas para mejorar la visibilidad
+                if (row % 2 == 0) {
+                    cell.setBackground(new Color(60, 60, 60)); // Darker color for even rows
+                } else {
+                    cell.setBackground(new Color(40, 40, 40)); // Slightly lighter color for odd rows
+                }
+
+                // Cambiar el fondo cuando la celda está seleccionada
+                if (isSelected) {
+                    cell.setBackground(new Color(0, 150, 255)); // Cyan background for selected row
+                    cell.setForeground(Color.BLACK); // Black text when selected
+                }
+                return cell;
+            }
+        });
 
         // Add action listeners
         addProduct.addActionListener(new ActionListener() {
@@ -92,6 +114,7 @@ public class ManageShop extends javax.swing.JPanel {
             }
         });
     }
+
 
     private String getBrandNameByCode(int brandCode) {
         return brandCodeMap.getOrDefault(brandCode, "Desconocida");
