@@ -55,6 +55,8 @@ public class ClothingStoreManager {
         // Add example types
         types.add(new Type("Sport", "Shoe"));
         types.add(new Type("Oversized", "Hoodie"));
+        types.add(new Type("Sneakers", "Shoe"));
+        types.add(new Type("Zipper", "Hoodie"));
 
         // Add example models
         models.add(new Model("ASN", "Air Max", "Shoe", "Sport", 1));
@@ -77,7 +79,7 @@ public class ClothingStoreManager {
         menuFrame.setLayout(new BorderLayout());
           
         
-        JPanel ManagePanel = new ManageShop(models, brandCodeMap, categories, brands);
+        JPanel ManagePanel = new ManageShop(models, brandCodeMap, categories, brands, types);
  
         menuFrame.add(ManagePanel);
 
@@ -98,7 +100,7 @@ public class ClothingStoreManager {
         menuFrame.setLayout(new BorderLayout());
 
         // Crear tu panel de gestión y añadirlo al JFrame
-        JPanel managePanel = new ManageShop(models, brandCodeMap, categories, brands);
+        JPanel managePanel = new ManageShop(models, brandCodeMap, categories, brands, types);
         menuFrame.add(managePanel);
 
         // Hacer visible el frame

@@ -3,12 +3,14 @@ package panels;
 import clases.Brand;
 import clases.Category;
 import clases.Model;
+import clases.Type;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +18,11 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+
+import java.awt.event.MouseEvent;
 
 public class ManageShop extends javax.swing.JPanel {
 
@@ -25,14 +30,16 @@ public class ManageShop extends javax.swing.JPanel {
     private  List<Brand> brands;
     private  List<Category> categories;
     private  Map<Integer, String> brandCodeMap;
+    private List<Type> types;
 
 
 
-    public ManageShop(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands) {
+    public ManageShop(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands, List<Type> types) {
         this.models = models;
         this.brandCodeMap = brandCodeMap;
         this.categories = categories;
         this.brands = brands;
+        this.types = types;
         initComponents();
         initConfig();
         loadModelsToTable();
@@ -50,6 +57,36 @@ public class ManageShop extends javax.swing.JPanel {
 
 
     private void initConfig() {
+
+        // Agregar MouseListener a la tabla para detectar clics
+        jTable1.addMouseListener(new MouseAdapter() {
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int row = jTable1.rowAtPoint(e.getPoint());  // Obtener la fila donde se hizo clic
+                if (row >= 0) {  // Verificar si la fila es válida
+                    int confirmation = JOptionPane.showConfirmDialog(
+                        null,
+                        "¿Estás seguro de que deseas eliminar este producto?",
+                        "Confirmación de eliminación",
+                        JOptionPane.YES_NO_OPTION
+                    );
+                    // Si el usuario selecciona "Sí"
+                    if (confirmation == JOptionPane.YES_OPTION) {
+                        // Eliminar el modelo de la lista
+                        Model modelToRemove = models.get(row);
+                        models.remove(row);
+                        // Volver a cargar la tabla después de la eliminación
+                        loadModelsToTable();
+                        JOptionPane.showMessageDialog(null, "Producto eliminado.");
+                    }
+                }
+            }
+        });
+
+        
+
+
         // Set a dark, futuristic background
         this.setBackground(new Color(30, 30, 30));  // Dark background
         jLabel1.setForeground(new Color(0, 150, 255));  // Cyan text for the title
@@ -141,7 +178,7 @@ public class ManageShop extends javax.swing.JPanel {
 
     private void addProductsMenu() {
         // Aquí no creamos una nueva ventana, solo reemplazamos el contenido actual de ManageShop
-        AddProductPanel productPanel = new AddProductPanel(models, brandCodeMap, categories, brands);
+        AddProductPanel productPanel = new AddProductPanel(models, brandCodeMap, categories, brands, types);
         this.setLayout(new BorderLayout());
         this.add(productPanel, BorderLayout.CENTER);
         this.removeAll();  // Remueve todos los componentes actuales del panel
@@ -165,7 +202,7 @@ public class ManageShop extends javax.swing.JPanel {
         addProduct = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Roboto", 1, 36));
-        jLabel1.setText("Tienda");
+        jLabel1.setText("Tienda Online");
 
         deleteProducts.setFont(new java.awt.Font("Roboto", 1, 14));
         deleteProducts.setText("Eliminar producto");

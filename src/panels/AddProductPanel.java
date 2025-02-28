@@ -5,6 +5,7 @@ import java.util.Map;
 
 import clases.Model;
 import clases.Brand;
+import clases.Type;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -27,12 +28,14 @@ public class AddProductPanel extends javax.swing.JPanel {
     private List<Category> categories;
     private List<Brand> brands;
     private Map<Integer, String> brandCodeMap;
+    private List<Type> types;
 
-    public AddProductPanel(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands) {
+    public AddProductPanel(List<Model> models, Map<Integer, String> brandCodeMap, List<Category> categories, List<Brand> brands, List<Type> types) {
         this.models = models;
         this.brandCodeMap = brandCodeMap;
         this.categories = categories;
-        this.brands = brands; 
+        this.brands = brands;
+        this.types = types; 
         
         initComponents();
         initConfig();
@@ -123,6 +126,14 @@ public class AddProductPanel extends javax.swing.JPanel {
             brandModel.addElement("No hay marcas disponibles");
         }
         MarcaCombo.setModel(brandModel);
+
+
+        // Llenar el ComboBox con los tipos
+        DefaultComboBoxModel<String> typeModel = new DefaultComboBoxModel<>();
+        for (Type type : types) {
+            typeModel.addElement(type.getName()); // Añadir solo el nombre de la categoría
+        }
+        TipeCombo.setModel(typeModel);
         
     }
 
@@ -132,6 +143,7 @@ public class AddProductPanel extends javax.swing.JPanel {
         String category = (String) CategorieCombo.getSelectedItem();
         String type = (String) TipeCombo.getSelectedItem();
         String brandName = (String) MarcaCombo.getSelectedItem();
+        
         
         // Validación básica para asegurarse de que no estén vacíos
         if (name.isEmpty() || category.isEmpty() || brandName.isEmpty()) {
@@ -165,6 +177,21 @@ public class AddProductPanel extends javax.swing.JPanel {
             System.out.println("Marca no encontrada: " + brandName);
             return;
         }
+
+        // Buscar el tipo seleccionado en la lista de tipos
+        Type selectedType = null;
+        for (Type ty : types) {
+            if (ty.getName().equals(type)) {
+                selectedType = ty;
+                break;
+            }
+        }
+        
+        // Verificar si se ha encontrado la marca
+        if (selectedType == null) {
+            System.out.println("Tipo no encontrado: " + type);
+            return;
+        }
     
         // Obtener el código de la marca
         int brandCode = selectedBrand.getBrandCode();
@@ -196,8 +223,6 @@ public class AddProductPanel extends javax.swing.JPanel {
         return nameInitial + categoryInitial + brandInitial;
     }
     
-    
-    
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
@@ -221,10 +246,6 @@ public class AddProductPanel extends javax.swing.JPanel {
 
         jLabel3.setFont(new java.awt.Font("Roboto", 1, 18));
         jLabel3.setText("Marca");
-
-        TipeCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo 1", "Tipo 2", "Tipo 3", "Tipo 4" }));
-
-        MarcaCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Marca 1", "Marca 2", "Marca 3", "Marca 4" }));
 
         jLabel4.setFont(new java.awt.Font("Roboto", 1, 18));
         jLabel4.setText("Categoría");
